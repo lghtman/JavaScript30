@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>HTML5 Canvas</title>
+</head>
+<body>
+<canvas id="draw" width="800" height="800"></canvas>
+<script>
+  //get canvas and context to draw on
+  const canvas = document.querySelector("#draw");
+  const context = canvas.getContext("2d");
+
+  //set canvas to full window
+  canvas.width = window.innerWidth;
+  canvas.height = window.innerHeight;
+
+  context.strokeStyle = "#BADA55";
+  context.lineJoin = "round";
+  context.lineCap = "round";
+
+
+  let isDrawing = false;  //flag to check whether the mouse is down
+  let lastX = 0;
+  let lastY = 0;
+
+  //track line color
+  let hue = 0;
+
+  //is line getting bigger or smaller?
+  let direction = 0;
+
+  function draw(e) {
+    if (!isDrawing) return;
+
+    //set line color
+    context.strokeStyle = `hsl(${hue}, 100%, 50%)`;
+
+    //draw line
+    context.beginPath();
+    context.moveTo(lastX, lastY); //start here
+    context.lineTo(e.offsetX, e.offsetY); //end here
+    context.stroke();
+    [lastX, lastY] = [e.offsetX, e.offsetY];
+    
+    //change color
+    hue++;
+
+    //change direction if size is too big or smll
+    if (context.lineWidth >= 100 || context.lineWidth <= 1) {
+      direction = !direction;
+    }
+
+    //increase or decrease line size
+    if (direction) {
+      context.lineWidth++;
+    } else {
+      context.lineWidth--;
+    }
+  }
+
+  canvas.addEventListener("mousemove", draw);
+  canvas.addEventListener("mousedown", (e) => {
+    isDrawing = true;
+    [lastX, lastY] = [e.offsetX, e.offsetY];
+  });
+  canvas.addEventListener("mouseup", () => isDrawing = false);
+  canvas.addEventListener("mouseout", () => isDrawing = false);
+</script>
+
+<style>
+  html, body {
+    margin: 0;
+  }
+</style>
+
+</body>
+</html>
